@@ -3,12 +3,14 @@ import { books } from "./data/books";
 import type { Book, BookSort, GenreFilter } from "./types";
 import FilterBar from "./components/FilterBar";
 import BookList from "./components/BookList";
+import BookDetails from "./components/BookDetails";
 
 export default function App() {
   const [genre, setGenre] = useState<GenreFilter>("wszystkie");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<BookSort>("title-asc");
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   const normalizedSearch = search.trim().toLocaleLowerCase("pl-PL");
 
@@ -33,18 +35,30 @@ export default function App() {
   return (
     <>
       <h1>📚 Katalog książek</h1>
-      <FilterBar
-        genre={genre}
-        onlyAvailable={onlyAvailable}
-        search={search}
-        sortBy={sortBy}
-        onGenreChange={setGenre}
-        onOnlyAvailableChange={setOnlyAvailable}
-        onSearchChange={setSearch}
-        onSortChange={setSortBy}
-      />
-      <p>Znaleziono: {visibleBooks.length}</p>
-      <BookList books={visibleBooks} />
+      {selectedBook ? (
+        <BookDetails
+          book={selectedBook}
+          onBack={() => setSelectedBook(null)}
+        />
+      ) : (
+        <>
+          <FilterBar
+            genre={genre}
+            onlyAvailable={onlyAvailable}
+            search={search}
+            sortBy={sortBy}
+            onGenreChange={setGenre}
+            onOnlyAvailableChange={setOnlyAvailable}
+            onSearchChange={setSearch}
+            onSortChange={setSortBy}
+          />
+          <p>Znaleziono: {visibleBooks.length}</p>
+          <BookList
+            books={visibleBooks}
+            onBookSelect={setSelectedBook}
+          />
+        </>
+      )}
     </>
   );
 }
